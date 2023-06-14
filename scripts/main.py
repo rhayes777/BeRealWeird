@@ -7,7 +7,7 @@ from llama_index.query_engine import RetrieverQueryEngine
 from bereal_gpt.described_memory import DescribedMemory
 from bereal_gpt.summarize import get_index, make_documents
 
-directory = Path(__file__).parent
+directory = Path(__file__).parent.parent
 
 memories = DescribedMemory.from_directory(directory / "memories")
 
