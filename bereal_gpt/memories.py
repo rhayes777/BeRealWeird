@@ -3,10 +3,23 @@ import json
 import datetime as dt
 from PIL import Image
 
+from bereal_gpt.weird_image import WeirdImage
 
-class Memory:
+
+class Memory(WeirdImage):
     def __init__(self, path: Path):
         self.path = path
+
+    def sub_image(self):
+        image = self.secondary_image()
+        new_size = (image.width // 4, image.height // 4)
+
+        # Rescale the image
+        return image.thumbnail(new_size, Image.ANTIALIAS)
+
+    @property
+    def image_path(self):
+        return self.path / 'combined.png'
 
     def primary_image(self):
         return Image.open(self.primary_path)

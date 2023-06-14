@@ -6,6 +6,7 @@ from PIL import Image
 import openai
 
 from bereal_gpt.described_memory import DescribedMemory
+from bereal_gpt.weird_image import WeirdImage
 
 
 def _generate_image(prompt: str, image_path: Path, size="1024x1024", ratio=(1.5 / 2)):
@@ -29,21 +30,13 @@ def _generate_image(prompt: str, image_path: Path, size="1024x1024", ratio=(1.5 
     return image.crop((left, 0, left + new_width, height))
 
 
-class AlternateReality:
+class AlternateReality(WeirdImage):
     def __init__(self, described_memory: DescribedMemory):
         self.described_memory = described_memory
 
-    def image(self):
-        path = self.described_memory.memory.path / "alternate_reality.png"
-        if path.exists():
-            return Image.open(path)
-
-        primary = self.primary_image()
-        secondary = self.secondary_image()
-        border = 10
-        primary.paste(secondary, (border, border))
-        primary.save(path)
-        return primary
+    @property
+    def image_path(self):
+        return self.described_memory.memory.path / "alternate_reality.png"
 
     def primary_image(self):
         return _generate_image(
