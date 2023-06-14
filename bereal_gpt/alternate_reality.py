@@ -34,22 +34,27 @@ class AlternateReality:
         self.described_memory = described_memory
 
     def image(self):
+        path = self.described_memory.memory.path / "alternate_reality.png"
+        if path.exists():
+            return Image.open(path)
+
         primary = self.primary_image()
         secondary = self.secondary_image()
         border = 10
         primary.paste(secondary, (border, border))
+        primary.save(path)
         return primary
 
     def primary_image(self):
         return _generate_image(
             f"A photo containing {self.described_memory.primary_description()}",
-            self.described_memory.memory.primary_path.with_name("alternate_primary.png"),
+            self.described_memory.memory.path / "alternate_primary.png",
         )
 
     def secondary_image(self):
         return _generate_image(
             f"A photo containing {self.described_memory.secondary_description()}. The photo is taken as a selfie.",
-            self.described_memory.memory.secondary_path.with_name("alternate_secondary.png"),
+            self.described_memory.memory.path / "alternate_secondary.png",
             size="256x256",
         )
 
