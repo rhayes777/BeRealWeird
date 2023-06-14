@@ -37,3 +37,4 @@ result = openai.Completion.create(
     engine="text-davinci-003",
     prompt=f"Here is a list of summaries describing what I did each month:\n\n{string}\n\n Here is a short poem describing what I did through the year:\n\n",
 )
+print(result)
