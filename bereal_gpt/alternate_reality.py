@@ -8,7 +8,7 @@ import openai
 from bereal_gpt.described_memory import DescribedMemory
 
 
-def _generate_image(prompt: str, image_path: Path, size="1024x1024"):
+def _generate_image(prompt: str, image_path: Path, size="1024x1024", ratio=(1.5 / 2)):
     if not image_path.exists():
         image = openai.Image.create(
             prompt=prompt,
@@ -22,7 +22,11 @@ def _generate_image(prompt: str, image_path: Path, size="1024x1024"):
             response.raw.decode_content = True
             shutil.copyfileobj(response.raw, f)
 
-    return Image.open(image_path)
+    image = Image.open(image_path)
+    width, height = image.size
+    new_width = int(height * ratio)
+    left = int((width - new_width) / 2)
+    return image.crop((left, 0, left + new_width, height))
 
 
 class AlternateReality:
@@ -31,13 +35,13 @@ class AlternateReality:
 
     def primary_image(self):
         return _generate_image(
-            self.described_memory.primary_description(),
+            f"A photo containing {self.described_memory.primary_description()}",
             self.described_memory.memory.primary_path.with_name("alternate_primary.png"),
         )
 
     def secondary_image(self):
         return _generate_image(
-            self.described_memory.secondary_description(),
+            f"A photo containing {self.described_memory.secondary_description()}. The photo is taken as a selfie.",
             self.described_memory.memory.secondary_path.with_name("alternate_secondary.png"),
             size="256x256",
         )
