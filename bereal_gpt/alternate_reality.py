@@ -33,6 +33,13 @@ class AlternateReality:
     def __init__(self, described_memory: DescribedMemory):
         self.described_memory = described_memory
 
+    def image(self):
+        primary = self.primary_image()
+        secondary = self.secondary_image()
+        border = 10
+        primary.paste(secondary, (border, border))
+        return primary
+
     def primary_image(self):
         return _generate_image(
             f"A photo containing {self.described_memory.primary_description()}",
