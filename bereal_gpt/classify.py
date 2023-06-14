@@ -17,12 +17,3 @@ def classify(image):
     logits = outputs.logits
     prediction = logits.argmax(-1)
     return model.config.id2label[prediction.item()]
-
-
-if __name__ == "__main__":
-    from pathlib import Path
-    from PIL import Image
-
-    image = Path(__file__).parent / "memories" / "2022-06-03" / "primary.jpg"
-    image = Image.open(image)
-    print(classify(image))

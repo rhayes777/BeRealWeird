@@ -1,11 +1,18 @@
 from pathlib import Path
 import json
 import datetime as dt
+from PIL import Image
 
 
 class Memory:
     def __init__(self, path: Path):
         self.path = path
+
+    def primary_image(self):
+        return Image.open(self.primary_path)
+
+    def secondary_image(self):
+        return Image.open(self.secondary_path)
 
     @property
     def primary_path(self):
@@ -42,11 +49,3 @@ class Memory:
     def from_directory(cls, path: Path):
         info_paths = path.glob('**/info.json')
         return sorted(cls(p.parent) for p in info_paths)
-
-
-if __name__ == "__main__":
-    path = Path(__file__).parent / "memories"
-    memories = Memory.from_directory(path)
-    print(len(memories))
-    print(memories[0])
-    print(memories[-1])
