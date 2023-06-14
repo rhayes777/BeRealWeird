@@ -1,30 +1,12 @@
 from pathlib import Path
-from llama_index import Document, ListIndex
 
 from bereal_gpt.described_memory import DescribedMemory
+from bereal_gpt.summarize import get_index, make_documents
 
 directory = Path(__file__).parent
 
 memories = DescribedMemory.from_directory(directory / "memories")
 
-documents = []
-for memory in memories:
-    date = str(memory.memory.memory_day())
-    documents.append(
-        Document(
-            memory.primary_description(),
-            extra_info={
-                'photo_type': 'Normal',
-                'date': date,
-                'description': 'The description of an image I took using my phone.',
-            }
-        ),
-    )
+engine = get_index(make_documents(memories)).as_query_engine()
 
-index = ListIndex.from_documents(documents)
-
-query_engine = index.as_query_engine(
-    response_mode="tree_summarize"
-)
-response = query_engine.query("What was I most often?")
-print(response)
+print(engine.query("What was I doing on the first of January?"))
