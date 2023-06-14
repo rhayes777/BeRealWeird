@@ -15,7 +15,8 @@ class Memory(WeirdImage):
         new_size = (image.width // 4, image.height // 4)
 
         # Rescale the image
-        return image.thumbnail(new_size, Image.ANTIALIAS)
+        image.thumbnail(new_size)
+        return image
 
     @property
     def image_path(self):

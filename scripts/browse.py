@@ -11,27 +11,31 @@ directory = Path(__file__).parent.parent
 
 def create_panel(alternate_reality: AlternateReality):
     alternate_reality_image = alternate_reality.image()
-    memory = alternate_reality.described_memory.memory
-    primary = memory.primary_image()
-    secondary = memory.secondary_image()
+    described = alternate_reality.described_memory
+    memory = described.memory
+    real_image = memory.image()
     # Resize images to the same size if needed
-    primary = primary.resize(alternate_reality_image.size)
-    secondary = secondary.resize(alternate_reality_image.size)
+    real_image = real_image.resize(alternate_reality_image.size)
 
     # Define the panel size (considering image sizes and text space)
-    panel_size = (primary.width * 3, primary.height + 60)  # 60 pixels for text
+    panel_size = (real_image.width * 2, real_image.height + 60)  # 60 pixels for text
 
     # Create a new image with white background
     panel = Image.new('RGB', panel_size, (255, 255, 255))
 
     # Paste the images into the panel
-    panel.paste(primary, (0, 60))  # First image at (0,60)
-    panel.paste(alternate_reality_image, (primary.width, 60))  # Second image beside the first one
-    panel.paste(secondary, (primary.width * 2, 60))  # Third image beside the second one
+    panel.paste(real_image, (0, 60))  # First image at (0,60)
+    panel.paste(alternate_reality_image, (real_image.width, 60))  # Second image beside the first one
 
     # Add text
     draw = ImageDraw.Draw(panel)
-    draw.text((10, 10), alternate_reality.described_memory.primary_description(), fill="black")
+    font = ImageFont.truetype("Arial Unicode.ttf", 15)
+    draw.text(
+        (10, 10),
+        f"{described.primary_description()} ({described.secondary_description()})",
+        fill="black",
+        font=font
+    )
 
     # Save the panel
     panel.save(directory / "browse" / f"{memory.memory_day()}.png")
