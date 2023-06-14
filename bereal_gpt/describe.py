@@ -22,3 +22,13 @@ def describe(images):
     preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
     preds = [pred.strip() for pred in preds]
     return preds
+
+
+if __name__ == "__main__":
+    from bereal_gpt.memories import Memory
+    from pathlib import Path
+
+    directory = Path(__file__).parent.parent
+    memory = Memory.from_directory(directory / "memories")[0]
+
+    print(describe([memory.primary_image()]))
