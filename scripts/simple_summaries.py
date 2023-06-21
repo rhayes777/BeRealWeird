@@ -9,8 +9,9 @@ from bereal_gpt.described_memory import DescribedMemory
 
 months = defaultdict(list)
 for memory in DescribedMemory.from_directory(Path(__file__).parent.parent / "memories"):
+    print(f"{memory.memory.memory_day()}: {memory.primary_description()}")
     months[calendar.month_name[memory.memory.memory_day().month]].append(memory)
-
+exit(0)
 
 all_summaries = []
 

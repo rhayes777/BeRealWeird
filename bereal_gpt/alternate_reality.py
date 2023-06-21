@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 import requests
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import openai
 
 from bereal_gpt.described_memory import DescribedMemory
@@ -35,9 +35,12 @@ class AlternateReality(WeirdImage):
         self.described_memory = described_memory
         self.style = style
 
-        self._directory = Path("alternate_reality") / style / str(self.memory_day())
-        if not self._directory.exists():
-            self._directory.mkdir(parents=True, exist_ok=True)
+    @property
+    def _directory(self):
+        directory = Path("alternate_reality") / self.style.replace(" ", "_") / str(self.memory_day())
+        if not directory.exists():
+            directory.mkdir(parents=True, exist_ok=True)
+        return directory
 
     @property
     def image_path(self):
@@ -62,3 +65,33 @@ class AlternateReality(WeirdImage):
 
     def memory_day(self):
         return self.described_memory.memory.memory_day()
+
+    def comparison_image(self):
+        alternate_reality_image = self.image()
+        described = self.described_memory
+        memory = described.memory
+        real_image = memory.image()
+        # Resize images to the same size if needed
+        real_image = real_image.resize(alternate_reality_image.size)
+
+        # Define the panel size (considering image sizes and text space)
+        panel_size = (real_image.width * 2, real_image.height + 60)  # 60 pixels for text
+
+        # Create a new image with white background
+        panel = Image.new('RGB', panel_size, (255, 255, 255))
+
+        # Paste the images into the panel
+        panel.paste(real_image, (0, 60))  # First image at (0,60)
+        panel.paste(alternate_reality_image, (real_image.width, 60))  # Second image beside the first one
+
+        # Add text
+        draw = ImageDraw.Draw(panel)
+        font = ImageFont.truetype("Arial Unicode.ttf", 15)
+        draw.text(
+            (10, 10),
+            f"{described.primary_description()} ({described.secondary_description()})",
+            fill="black",
+            font=font
+        )
+
+        return panel

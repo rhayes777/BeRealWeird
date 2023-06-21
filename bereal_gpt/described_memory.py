@@ -32,6 +32,10 @@ class DescribedMemory:
     def secondary_description_path(self):
         return self.memory.path / "secondary_description.txt"
 
+    @property
+    def description(self):
+        return f"{self.primary_description()} ({self.secondary_description()})"
+
     def primary_description(self):
         return self.primary_description_path.read_text()
 
