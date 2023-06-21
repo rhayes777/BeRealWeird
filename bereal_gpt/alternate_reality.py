@@ -31,26 +31,34 @@ def _generate_image(prompt: str, image_path: Path, size="1024x1024", ratio=(1.5 
 
 
 class AlternateReality(WeirdImage):
-    def __init__(self, described_memory: DescribedMemory):
+    def __init__(self, described_memory: DescribedMemory, style=None):
         self.described_memory = described_memory
+        self.style = style
+
+        self._directory = Path("alternate_reality") / style / str(self.memory_day())
+        if not self._directory.exists():
+            self._directory.mkdir(parents=True, exist_ok=True)
 
     @property
     def image_path(self):
-        return self.described_memory.memory.path / "alternate_reality.png"
+        return self._directory.with_suffix(".png")
 
     def primary_image(self):
         return _generate_image(
-            f"A photo containing {self.described_memory.primary_description()}",
-            self.described_memory.memory.path / "alternate_primary.png",
+            f"A photo containing {self.described_memory.primary_description()}. {self.style}",
+            self._directory / "alternate_primary.png",
         )
 
     def secondary_image(self):
         return _generate_image(
-            f"A photo containing {self.described_memory.secondary_description()}. The photo is taken as a selfie.",
-            self.described_memory.memory.path / "alternate_secondary.png",
+            f"A photo containing {self.described_memory.secondary_description()}. The photo is taken as a selfie. {self.style}",
+            self._directory / "alternate_secondary.png",
             size="256x256",
         )
 
     @classmethod
-    def from_directory(cls, directory):
-        return list(map(cls, DescribedMemory.from_directory(directory)))
+    def _from_directory(cls, directory, style=None):
+        return [cls(memory, style=style) for memory in DescribedMemory.from_directory(directory)]
+
+    def memory_day(self):
+        return self.described_memory.memory.memory_day()

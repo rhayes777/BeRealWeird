@@ -60,6 +60,6 @@ class Memory(WeirdImage):
         return f"Memory({self.memory_day()})"
 
     @classmethod
-    def from_directory(cls, path: Path):
+    def _from_directory(cls, path: Path, **kwargs):
         info_paths = path.glob('**/info.json')
         return sorted(cls(p.parent) for p in info_paths)
